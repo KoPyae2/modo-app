@@ -1,0 +1,222 @@
+﻿@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-background: oklch(0.985 0.011 210);
+  --color-foreground: oklch(0.19 0.025 252);
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.19 0.025 252);
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.19 0.025 252);
+  --color-primary: oklch(0.59 0.17 213);
+  --color-primary-foreground: oklch(0.99 0 0);
+  --color-secondary: oklch(0.955 0.022 205);
+  --color-secondary-foreground: oklch(0.26 0.035 252);
+  --color-muted: oklch(0.95 0.018 210);
+  --color-muted-foreground: oklch(0.48 0.035 252);
+  --color-accent: oklch(0.925 0.052 195);
+  --color-accent-foreground: oklch(0.25 0.055 220);
+  --color-destructive: oklch(0.58 0.22 29);
+  --color-destructive-foreground: oklch(0.99 0 0);
+  --color-border: oklch(0.885 0.028 210);
+  --color-input: oklch(0.885 0.028 210);
+  --color-ring: oklch(0.59 0.17 213);
+  --color-success: oklch(0.65 0.16 154);
+  --color-warning: oklch(0.74 0.15 75);
+  --color-info: oklch(0.62 0.15 235);
+
+  --radius-lg: 0.875rem;
+  --radius-md: 0.625rem;
+  --radius-sm: 0.375rem;
+}
+
+.dark {
+  --color-background: oklch(0.17 0.028 226);
+  --color-foreground: oklch(0.94 0.012 210);
+  --color-card: oklch(0.215 0.027 226);
+  --color-card-foreground: oklch(0.94 0.012 210);
+  --color-popover: oklch(0.235 0.027 226);
+  --color-popover-foreground: oklch(0.94 0.012 210);
+  --color-primary: oklch(0.72 0.14 205);
+  --color-primary-foreground: oklch(0.16 0.032 226);
+  --color-secondary: oklch(0.27 0.031 222);
+  --color-secondary-foreground: oklch(0.94 0.012 210);
+  --color-muted: oklch(0.275 0.028 226);
+  --color-muted-foreground: oklch(0.72 0.026 220);
+  --color-accent: oklch(0.34 0.07 198);
+  --color-accent-foreground: oklch(0.94 0.012 210);
+  --color-destructive: oklch(0.67 0.18 29);
+  --color-destructive-foreground: oklch(0.99 0 0);
+  --color-border: oklch(0.335 0.03 222);
+  --color-input: oklch(0.355 0.03 222);
+  --color-ring: oklch(0.72 0.14 205);
+  --color-success: oklch(0.71 0.14 154);
+  --color-warning: oklch(0.78 0.14 75);
+  --color-info: oklch(0.72 0.13 235);
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+  overscroll-behavior: none;
+}
+button,
+[role="button"],
+input,
+textarea,
+select {
+  touch-action: manipulation;
+}
+
+* {
+  border-color: var(--color-border);
+}
+::selection {
+  background: color-mix(in oklch, var(--color-primary) 24%, transparent);
+}
+
+.soft-surface {
+  box-shadow:
+    0 1px 1px color-mix(in oklch, var(--color-foreground) 7%, transparent),
+    0 18px 38px color-mix(in oklch, var(--color-foreground) 8%, transparent);
+}
+
+.soft-popover {
+  box-shadow:
+    0 1px 1px color-mix(in oklch, var(--color-foreground) 8%, transparent),
+    0 18px 48px color-mix(in oklch, var(--color-foreground) 15%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+.app-workspace {
+  background:
+    radial-gradient(circle at top left, color-mix(in oklch, var(--color-primary) 10%, transparent), transparent 34rem),
+    linear-gradient(135deg, var(--color-background), color-mix(in oklch, var(--color-muted) 54%, var(--color-background)));
+}
+
+.app-titlebar {
+  box-shadow: 0 1px 0 color-mix(in oklch, white 60%, transparent) inset;
+}
+
+.dark .app-titlebar {
+  box-shadow: 0 1px 0 color-mix(in oklch, white 8%, transparent) inset;
+}
+
+.cute-card {
+  border: 1px solid var(--color-border);
+  background: color-mix(in oklch, var(--color-card) 92%, var(--color-background));
+  box-shadow: 0 1px 0 color-mix(in oklch, white 72%, transparent) inset;
+}
+
+.dark .cute-card {
+  box-shadow: 0 1px 0 color-mix(in oklch, white 8%, transparent) inset;
+}
+/* Subtle scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklch, var(--color-muted-foreground) 30%, transparent);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklch, var(--color-muted-foreground) 50%, transparent);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------- TipTap editor ---------- */
+.tiptap {
+  outline: none;
+  min-height: 100%;
+  font-size: var(--editor-font-size, 16px);
+  line-height: 1.65;
+}
+
+.tiptap > * + * {
+  margin-top: 0.6em;
+}
+
+.tiptap h1 {
+  @apply text-3xl font-bold mt-6;
+}
+.tiptap h2 {
+  @apply text-2xl font-semibold mt-5;
+}
+.tiptap h3 {
+  @apply text-xl font-semibold mt-4;
+}
+.tiptap ul {
+  @apply list-disc pl-6;
+}
+.tiptap ol {
+  @apply list-decimal pl-6;
+}
+.tiptap li > p {
+  margin: 0.15em 0;
+}
+.tiptap blockquote {
+  @apply border-l-4 border-border pl-4 text-muted-foreground italic;
+}
+.tiptap code {
+  @apply bg-muted rounded px-1.5 py-0.5 text-[0.9em] font-mono;
+}
+.tiptap pre {
+  @apply bg-muted rounded-lg p-4 font-mono text-sm overflow-x-auto;
+}
+.tiptap pre code {
+  @apply bg-transparent p-0;
+}
+.tiptap a {
+  @apply text-primary underline underline-offset-2 cursor-pointer;
+}
+.tiptap mark {
+  @apply bg-yellow-200 dark:bg-yellow-500/40 rounded-sm px-0.5;
+  color: inherit;
+}
+.tiptap hr {
+  @apply my-6 border-border;
+}
+
+/* Task list (checkboxes) */
+.tiptap ul[data-type="taskList"] {
+  @apply list-none pl-1;
+}
+.tiptap ul[data-type="taskList"] li {
+  @apply flex gap-2 items-start;
+}
+.tiptap ul[data-type="taskList"] li > label {
+  @apply mt-1 select-none;
+}
+.tiptap ul[data-type="taskList"] li > label input {
+  @apply accent-[var(--color-primary)] size-4 cursor-pointer;
+}
+.tiptap ul[data-type="taskList"] li[data-checked="true"] > div {
+  @apply line-through text-muted-foreground;
+}
+
+/* Placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply text-muted-foreground/60 float-left h-0 pointer-events-none;
+}
+
+
