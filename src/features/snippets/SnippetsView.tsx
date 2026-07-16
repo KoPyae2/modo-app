@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import CodeMirror, { type ReactCodeMirrorProps } from "@uiw/react-codemirror";
 import { languages as languageDescriptions } from "@codemirror/language-data";
 import { formatDistanceToNow } from "date-fns";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import { Check, CheckSquare, Code2, Copy, Plus, Search, Star, Trash2, X } from "lucide-react";
 import { cn, debounce } from "@/lib/utils";
 import { useSnippetsStore } from "@/stores/snippetsStore";
@@ -303,7 +303,8 @@ export function SnippetsView({ snippetId }: { snippetId?: string }) {
     return result;
   }, [snippets, query, languageFilter, favOnly, sortBy]);
 
-  const selected = snippets.find((s) => s.id === snippetId) ?? null;
+  // Fall back to the first snippet so the editor is never empty (matches Notes)
+  const selected = snippets.find((s) => s.id === snippetId) ?? filtered[0] ?? null;
 
   const { visible, hasMore, sentinelRef } = useLazyList(filtered, 50);
 
@@ -475,12 +476,12 @@ export function SnippetsView({ snippetId }: { snippetId?: string }) {
                     : navigate({ name: "snippets", snippetId: snippet.id })
                 }
                 className={cn(
-                  "mb-1 block w-full rounded-lg px-3 py-2.5 text-left transition-colors",
+                  "mb-1 block w-full rounded-xl border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   selecting && selectedIds.has(snippet.id)
-                    ? "bg-primary/10 ring-1 ring-primary/30"
-                    : snippet.id === snippetId && !selecting
-                      ? "bg-accent text-accent-foreground"
-                      : "hover:bg-accent/50",
+                    ? "border-primary/45 bg-primary/10"
+                    : snippet.id === selected?.id && !selecting
+                      ? "border-primary/45 bg-primary/10 shadow-sm"
+                      : "border-transparent hover:border-border/70 hover:bg-accent/40",
                 )}
               >
                 <div className="flex items-center gap-1.5">

@@ -1,11 +1,26 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { disable, enable, isEnabled } from "@tauri-apps/plugin-autostart";
 import {
   isPermissionGranted,
   requestPermission,
 } from "@tauri-apps/plugin-notification";
-import { toast } from "sonner";
-import { Bell, Database, Download, Laptop, Palette, Upload } from "lucide-react";
+import { toast } from "@/components/ui/toast";
+import {
+  Bell,
+  CalendarDays,
+  Check,
+  ChevronRight,
+  Clock,
+  Download,
+  LayoutGrid,
+  Minus,
+  Palette,
+  Plus,
+  Power,
+  Type,
+  Upload,
+} from "lucide-react";
+import { DARK_BACKGROUNDS, LIGHT_BACKGROUNDS } from "@/lib/backgrounds";
 import { exportAllData, importAllData, isValidBackup } from "@/lib/db/backup";
 import { useNotesStore } from "@/stores/notesStore";
 import { useScratchpadStore } from "@/stores/scratchpadStore";
@@ -14,9 +29,6 @@ import { useSnippetsStore } from "@/stores/snippetsStore";
 import { useTagsStore } from "@/stores/tagsStore";
 import { useTasksStore } from "@/stores/tasksStore";
 import { useUiStore } from "@/stores/uiStore";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -25,51 +37,191 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 import type { AppSettings } from "@/types";
 
-function Section({
-  icon,
+function SettingsGroup({
   title,
+  footer,
   children,
 }: {
-  icon: React.ReactNode;
   title: string;
+  footer?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="mb-8">
-      <div className="mb-2.5 flex items-center gap-2">
-        <span className="flex size-6 items-center justify-center rounded-md bg-primary/10 text-primary [&_svg]:size-3.5">
-          {icon}
-        </span>
-        <h2 className="text-sm font-semibold">{title}</h2>
-      </div>
-      <div className="divide-y rounded-xl border bg-card">{children}</div>
+    <section className="mb-7">
+      <h2 className="mb-2 px-4 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+        {title}
+      </h2>
+      <div className="overflow-hidden rounded-2xl border bg-card">{children}</div>
+      {footer && (
+        <p className="mt-2 px-4 text-xs leading-5 text-muted-foreground">{footer}</p>
+      )}
     </section>
   );
 }
 
-function Row({
+const rowClass =
+  "relative flex w-full items-center gap-3 px-4 py-3 after:absolute after:bottom-0 after:left-14 after:right-0 after:h-px after:bg-border/60 last:after:hidden";
+
+function IconBadge({ color, children }: { color: string; children: React.ReactNode }) {
+  return (
+    <span
+      className={cn(
+        "flex size-7 shrink-0 items-center justify-center rounded-lg text-white [&_svg]:size-4",
+        color,
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+function SettingsRow({
+  icon,
+  iconColor,
   label,
   description,
   children,
 }: {
+  icon: React.ReactNode;
+  iconColor: string;
   label: string;
   description?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 px-4 py-3.5">
-      <div>
-        <Label className="text-sm">{label}</Label>
+    <div className={rowClass}>
+      <IconBadge color={iconColor}>{icon}</IconBadge>
+      <div className="min-w-0 flex-1">
+        <p className="text-[13.5px] font-medium leading-5">{label}</p>
         {description && (
-          <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
+          <p className="text-xs leading-4 text-muted-foreground">{description}</p>
         )}
       </div>
-      <div className="shrink-0">{children}</div>
+      <div className="flex shrink-0 items-center">{children}</div>
     </div>
   );
 }
+
+function SettingsButtonRow({
+  icon,
+  iconColor,
+  label,
+  description,
+  disabled,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  iconColor: string;
+  label: string;
+  description?: string;
+  disabled?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className={cn(
+        rowClass,
+        "text-left transition-colors hover:bg-accent/50 active:bg-accent disabled:pointer-events-none disabled:opacity-50",
+      )}
+    >
+      <IconBadge color={iconColor}>{icon}</IconBadge>
+      <div className="min-w-0 flex-1">
+        <p className="text-[13.5px] font-medium leading-5">{label}</p>
+        {description && (
+          <p className="text-xs leading-4 text-muted-foreground">{description}</p>
+        )}
+      </div>
+      <ChevronRight className="size-4 shrink-0 text-muted-foreground/60" />
+    </button>
+  );
+}
+
+function Stepper({
+  value,
+  min,
+  max,
+  suffix,
+  onChange,
+}: {
+  value: number;
+  min: number;
+  max: number;
+  suffix?: string;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div className="flex items-center overflow-hidden rounded-lg border bg-background/50">
+      <button
+        type="button"
+        aria-label="Decrease"
+        disabled={value <= min}
+        onClick={() => onChange(value - 1)}
+        className="grid h-7 w-8 place-items-center text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+      >
+        <Minus className="size-3.5" />
+      </button>
+      <span className="w-12 border-x text-center text-[13px] tabular-nums leading-7">
+        {value}
+        {suffix}
+      </span>
+      <button
+        type="button"
+        aria-label="Increase"
+        disabled={value >= max}
+        onClick={() => onChange(value + 1)}
+        className="grid h-7 w-8 place-items-center text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+      >
+        <Plus className="size-3.5" />
+      </button>
+    </div>
+  );
+}
+
+function BackgroundTile({
+  label,
+  selected,
+  onClick,
+  children,
+}: {
+  label: string;
+  selected: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative min-w-0">
+      <button
+        type="button"
+        onClick={onClick}
+        className={cn(
+          "relative block aspect-video w-full overflow-hidden rounded-lg border transition-shadow",
+          selected
+            ? "ring-2 ring-primary ring-offset-2 ring-offset-card"
+            : "hover:ring-2 hover:ring-primary/40 hover:ring-offset-2 hover:ring-offset-card",
+        )}
+      >
+        {children}
+        {selected && (
+          <span className="absolute bottom-1 right-1 grid size-4.5 place-items-center rounded-full bg-primary text-primary-foreground">
+            <Check className="size-3" />
+          </span>
+        )}
+      </button>
+      <p className="mt-1 truncate text-center text-[11px] text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
+const selectTriggerClass =
+  "h-8 w-auto gap-1.5 border-0 bg-transparent px-2 text-[13px] text-muted-foreground shadow-none hover:bg-accent hover:text-foreground focus:ring-0";
+
+const iosSwitchClass = "data-[state=checked]:bg-[#34c759]";
 
 export function SettingsView() {
   const settings = useSettingsStore((s) => s.settings);
@@ -79,6 +231,15 @@ export function SettingsView() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [autostartBusy, setAutostartBusy] = useState(false);
+
+  // Which theme's background set to show in the picker
+  const isDark =
+    settings.theme === "dark" ||
+    (settings.theme === "system" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const backgroundKey = isDark ? "backgroundDark" : "backgroundLight";
+  const backgroundOptions = isDark ? DARK_BACKGROUNDS : LIGHT_BACKGROUNDS;
+  const activeBackground = settings[backgroundKey];
 
   useEffect(() => {
     let cancelled = false;
@@ -223,93 +384,129 @@ export function SettingsView() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl p-6">
-      <header className="mb-8">
+    <div className="mx-auto max-w-2xl p-6">
+      <header className="mb-7 px-4">
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Customize how MoDo looks and behaves
         </p>
       </header>
 
-      <Section icon={<Palette />} title="Appearance">
-        <Row label="Theme">
+      <SettingsGroup title="Appearance">
+        <SettingsRow icon={<Palette />} iconColor="bg-purple-500" label="Theme">
           <Select
             value={settings.theme}
             onValueChange={(v) => void setSetting("theme", v as AppSettings["theme"])}
           >
-            <SelectTrigger className="w-36">
+            <SelectTrigger className={selectTriggerClass}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent align="end">
               <SelectItem value="light">Light</SelectItem>
               <SelectItem value="dark">Dark</SelectItem>
               <SelectItem value="system">System</SelectItem>
             </SelectContent>
           </Select>
-        </Row>
-        <Row label="Editor font size" description="Font size for the notes editor">
-          <div className="flex items-center gap-2">
-            <Input
-              type="number"
-              min={12}
-              max={28}
-              className="w-20"
-              value={settings.editorFontSize}
-              onChange={(e) => {
-                const v = Number(e.target.value);
-                if (v >= 12 && v <= 28) void setSetting("editorFontSize", v);
-              }}
-            />
-            <span className="text-xs text-muted-foreground">px</span>
-          </div>
-        </Row>
-        <Row label="Start of week">
+        </SettingsRow>
+        <SettingsRow
+          icon={<Type />}
+          iconColor="bg-blue-500"
+          label="Editor font size"
+          description="Font size for the notes editor"
+        >
+          <Stepper
+            value={settings.editorFontSize}
+            min={12}
+            max={28}
+            onChange={(v) => void setSetting("editorFontSize", v)}
+          />
+        </SettingsRow>
+        <SettingsRow icon={<CalendarDays />} iconColor="bg-red-500" label="Start of week">
           <Select
             value={String(settings.weekStartsOn)}
             onValueChange={(v) =>
               void setSetting("weekStartsOn", Number(v) as AppSettings["weekStartsOn"])
             }
           >
-            <SelectTrigger className="w-36">
+            <SelectTrigger className={selectTriggerClass}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent align="end">
               <SelectItem value="1">Monday</SelectItem>
               <SelectItem value="0">Sunday</SelectItem>
             </SelectContent>
           </Select>
-        </Row>
-        <Row label="Default view on launch">
+        </SettingsRow>
+        <SettingsRow
+          icon={<LayoutGrid />}
+          iconColor="bg-indigo-500"
+          label="Default view on launch"
+        >
           <Select
             value={settings.defaultView}
             onValueChange={(v) =>
               void setSetting("defaultView", v as AppSettings["defaultView"])
             }
           >
-            <SelectTrigger className="w-36">
+            <SelectTrigger className={selectTriggerClass}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent align="end">
               <SelectItem value="dashboard">Dashboard</SelectItem>
               <SelectItem value="tasks">Tasks</SelectItem>
               <SelectItem value="notes">Notes</SelectItem>
             </SelectContent>
           </Select>
-        </Row>
-      </Section>
+        </SettingsRow>
+      </SettingsGroup>
 
-      <Section icon={<Bell />} title="Notifications">
-        <Row
+      <SettingsGroup
+        title={isDark ? "Background · Dark mode" : "Background · Light mode"}
+        footer="Each theme remembers its own background — switch the theme to pick one for the other mode."
+      >
+        <div className="grid grid-cols-3 gap-3 p-4">
+          <BackgroundTile
+            label="None"
+            selected={activeBackground === "none"}
+            onClick={() => void setSetting(backgroundKey, "none")}
+          >
+            <div className="app-workspace h-full w-full" />
+          </BackgroundTile>
+          {backgroundOptions.map((bg) => (
+            <BackgroundTile
+              key={bg.id}
+              label={bg.label}
+              selected={activeBackground === bg.id}
+              onClick={() => void setSetting(backgroundKey, bg.id)}
+            >
+              <img
+                src={bg.url}
+                alt={bg.label}
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
+            </BackgroundTile>
+          ))}
+        </div>
+      </SettingsGroup>
+
+      <SettingsGroup title="Notifications">
+        <SettingsRow
+          icon={<Bell />}
+          iconColor="bg-rose-500"
           label="Task reminders"
           description="Desktop notifications when tasks are due"
         >
           <Switch
+            className={iosSwitchClass}
             checked={settings.notificationsEnabled}
             onCheckedChange={(c) => void handleNotificationsEnabled(c)}
             aria-label="Toggle notifications"
           />
-        </Row>
-        <Row
+        </SettingsRow>
+        <SettingsRow
+          icon={<Clock />}
+          iconColor="bg-orange-500"
           label="Default pre-reminder"
           description="How early to remind before the due time"
         >
@@ -317,10 +514,10 @@ export function SettingsView() {
             value={String(settings.preReminderMin)}
             onValueChange={(v) => void setSetting("preReminderMin", Number(v))}
           >
-            <SelectTrigger className="w-36">
+            <SelectTrigger className={selectTriggerClass}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent align="end">
               <SelectItem value="0">At due time</SelectItem>
               <SelectItem value="5">5 minutes</SelectItem>
               <SelectItem value="15">15 minutes</SelectItem>
@@ -328,52 +525,58 @@ export function SettingsView() {
               <SelectItem value="60">1 hour</SelectItem>
             </SelectContent>
           </Select>
-        </Row>
-      </Section>
+        </SettingsRow>
+      </SettingsGroup>
 
-      <Section icon={<Laptop />} title="System">
-        <Row label="Start with system" description="Launch MoDo on login">
+      <SettingsGroup title="System">
+        <SettingsRow
+          icon={<Power />}
+          iconColor="bg-slate-500"
+          label="Start with system"
+          description="Launch MoDo on login"
+        >
           <Switch
+            className={iosSwitchClass}
             checked={settings.autostart}
             disabled={autostartBusy}
             onCheckedChange={(c) => void handleAutostart(c)}
             aria-label="Toggle autostart"
           />
-        </Row>
-      </Section>
+        </SettingsRow>
+      </SettingsGroup>
 
-      <Section icon={<Database />} title="Data">
-        <Row label="Export backup" description="Save all data as a JSON file">
-          <Button variant="outline" size="sm" disabled={busy} onClick={() => void handleExport()}>
-            <Download className="size-4" /> Export
-          </Button>
-        </Row>
-        <Row
+      <SettingsGroup
+        title="Data"
+        footer="Backups include all notes, tasks, snippets, tags and settings as a single JSON file."
+      >
+        <SettingsButtonRow
+          icon={<Download />}
+          iconColor="bg-emerald-500"
+          label="Export backup"
+          description="Save all data as a JSON file"
+          disabled={busy}
+          onClick={() => void handleExport()}
+        />
+        <SettingsButtonRow
+          icon={<Upload />}
+          iconColor="bg-sky-500"
           label="Import backup"
           description="Replace all current data with a backup file"
-        >
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={busy}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <Upload className="size-4" /> Import
-          </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/json,.json"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) void handleImportFile(file);
-            }}
-          />
-        </Row>
-      </Section>
+          disabled={busy}
+          onClick={() => fileInputRef.current?.click()}
+        />
+      </SettingsGroup>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="application/json,.json"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) void handleImportFile(file);
+        }}
+      />
     </div>
   );
 }
-
-

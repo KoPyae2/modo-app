@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import { tagsRepo } from "@/lib/db/collectionsRepo";
 import type { Tag } from "@/types";
 

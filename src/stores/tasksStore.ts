@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import { tasksRepo, type NewTaskInput } from "@/lib/db/tasksRepo";
 import { projectsRepo } from "@/lib/db/collectionsRepo";
 import { nextOccurrence } from "@/lib/recurrence";

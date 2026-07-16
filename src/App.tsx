@@ -1,5 +1,5 @@
 ﻿import { useEffect, useRef, useState } from "react";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/toast";
 import { notesRepo } from "@/lib/db/notesRepo";
 import { tasksRepo } from "@/lib/db/tasksRepo";
 import { snippetsRepo } from "@/lib/db/snippetsRepo";
@@ -10,6 +10,8 @@ import { useSnippetsStore } from "@/stores/snippetsStore";
 import { useTagsStore } from "@/stores/tagsStore";
 import { useTasksStore } from "@/stores/tasksStore";
 import { useUiStore } from "@/stores/uiStore";
+import { cn } from "@/lib/utils";
+import { resolveBackgroundUrl } from "@/lib/backgrounds";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useReminders } from "@/hooks/useReminders";
 import { useTrayEvents } from "@/hooks/useTrayEvents";
@@ -69,6 +71,13 @@ function MainContent() {
 
 export default function App() {
   const theme = useSettingsStore((s) => s.settings.theme);
+  const backgroundLight = useSettingsStore((s) => s.settings.backgroundLight);
+  const backgroundDark = useSettingsStore((s) => s.settings.backgroundDark);
+  const [osDark, setOsDark] = useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  );
+  const isDark = theme === "dark" || (theme === "system" && osDark);
+  const backgroundUrl = resolveBackgroundUrl(isDark, backgroundLight, backgroundDark);
   const [ready, setReady] = useState(false);
   const bootedRef = useRef(false);
 
@@ -114,7 +123,10 @@ export default function App() {
   useEffect(() => {
     applyTheme(theme);
     const mql = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => applyTheme(useSettingsStore.getState().settings.theme);
+    const onChange = () => {
+      setOsDark(mql.matches);
+      applyTheme(useSettingsStore.getState().settings.theme);
+    };
     mql.addEventListener("change", onChange);
     return () => mql.removeEventListener("change", onChange);
   }, [theme]);
@@ -130,9 +142,24 @@ export default function App() {
   return (
     <TooltipProvider>
       <ErrorBoundary>
-        <div className="flex h-screen flex-col overflow-hidden bg-background">
+        <div className="app-shell relative isolate flex h-screen flex-col overflow-hidden bg-background">
+          {backgroundUrl && (
+            <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+              <div
+                className="h-full w-full bg-cover bg-center"
+                style={{ backgroundImage: `url("${backgroundUrl}")` }}
+              />
+              {/* light readability scrim so cards and text stay legible on any image */}
+              <div className="absolute inset-0 bg-background/12 dark:bg-background/30" />
+            </div>
+          )}
           <AppTitleBar />
-          <div className="app-workspace flex min-h-0 flex-1 overflow-hidden">
+          <div
+            className={cn(
+              "flex min-h-0 flex-1 overflow-hidden",
+              !backgroundUrl && "app-workspace",
+            )}
+          >
             <Sidebar />
             <main className="min-w-0 flex-1 overflow-y-auto">
               <MainContent />
@@ -145,7 +172,7 @@ export default function App() {
         <ConfirmDialog />
         <ShortcutsHelpModal />
         <GlobalBusyOverlay />
-        <Toaster position="bottom-right" richColors closeButton />
+        <Toaster />
       </ErrorBoundary>
     </TooltipProvider>
   );

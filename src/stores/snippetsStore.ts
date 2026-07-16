@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import { snippetsRepo } from "@/lib/db/snippetsRepo";
 import type { Snippet } from "@/types";
 

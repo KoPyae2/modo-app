@@ -130,6 +130,8 @@ export interface AppSettings {
   editorFontSize: number;
   weekStartsOn: 0 | 1; // 0 = Sunday, 1 = Monday
   autostart: boolean;
+  backgroundLight: string; // "none" | light background id, shown in light mode
+  backgroundDark: string; // "none" | dark background id, shown in dark mode
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -140,6 +142,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   editorFontSize: 16,
   weekStartsOn: 1,
   autostart: false,
+  backgroundLight: "none",
+  backgroundDark: "none",
 };
 
 export const PRIORITIES: Priority[] = ["low", "medium", "high", "urgent"];

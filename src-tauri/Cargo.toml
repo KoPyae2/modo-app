@@ -1,6 +1,6 @@
 [package]
 name = "modo"
-version = "0.1.0"
+version = "1.0.0"
 description = "MoDo — notes, todos, and quick capture"
 authors = ["you"]
 edition = "2021"

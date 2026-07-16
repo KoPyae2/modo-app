@@ -1,4 +1,5 @@
 import { getDb } from "./client";
+import { DARK_BACKGROUND_IDS, LIGHT_BACKGROUND_IDS } from "@/lib/backgrounds";
 import { DEFAULT_SETTINGS, type AppSettings } from "@/types";
 
 function normalizeSettings(stored: Record<string, unknown>): AppSettings {
@@ -45,6 +46,16 @@ function normalizeSettings(stored: Record<string, unknown>): AppSettings {
       typeof stored.autostart === "boolean"
         ? stored.autostart
         : DEFAULT_SETTINGS.autostart,
+    backgroundLight:
+      typeof stored.backgroundLight === "string" &&
+      LIGHT_BACKGROUND_IDS.has(stored.backgroundLight)
+        ? stored.backgroundLight
+        : DEFAULT_SETTINGS.backgroundLight,
+    backgroundDark:
+      typeof stored.backgroundDark === "string" &&
+      DARK_BACKGROUND_IDS.has(stored.backgroundDark)
+        ? stored.backgroundDark
+        : DEFAULT_SETTINGS.backgroundDark,
   };
 }
 

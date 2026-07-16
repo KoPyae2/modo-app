@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import { notesRepo } from "@/lib/db/notesRepo";
 import { foldersRepo } from "@/lib/db/collectionsRepo";
 import type { Folder, Note } from "@/types";

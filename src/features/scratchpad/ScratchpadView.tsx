@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import { ChevronDown, Copy, FileText, ListTodo, Search, Trash2, Zap } from "lucide-react";
 import { modKey } from "@/lib/utils";
 import { textToTiptapJson } from "@/lib/tiptap";

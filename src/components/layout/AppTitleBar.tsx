@@ -1,6 +1,7 @@
 import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
-import { Maximize2, Minus, Square, X } from "lucide-react";
+import { Maximize2, Minus, Settings, Square, Trash2, X } from "lucide-react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { useUiStore } from "@/stores/uiStore";
 import { cn } from "@/lib/utils";
 
 type TauriWindow = ReturnType<typeof getCurrentWindow>;
@@ -28,6 +29,8 @@ async function runWindowAction(action: (appWindow: TauriWindow) => Promise<void>
 
 export function AppTitleBar() {
   const [maximized, setMaximized] = useState(false);
+  const view = useUiStore((s) => s.view);
+  const navigate = useUiStore((s) => s.navigate);
 
   useEffect(() => {
     let disposed = false;
@@ -78,7 +81,7 @@ export function AppTitleBar() {
 
   return (
     <header
-      className="app-titlebar flex h-10 shrink-0 select-none items-center border-b bg-card/88 text-foreground backdrop-blur-xl"
+      className="app-titlebar flex h-10 shrink-0 select-none items-center border-b bg-card/60 text-foreground backdrop-blur-xl backdrop-saturate-150 dark:bg-card/55"
     >
       <div
         className="flex min-w-0 flex-1 items-center gap-2 px-3"
@@ -90,6 +93,21 @@ export function AppTitleBar() {
       </div>
 
       <div className="flex h-full items-center">
+        <TitleBarButton
+          label="Trash"
+          active={view.name === "trash"}
+          onClick={() => navigate({ name: "trash" })}
+        >
+          <Trash2 className="size-4" />
+        </TitleBarButton>
+        <TitleBarButton
+          label="Settings"
+          active={view.name === "settings"}
+          onClick={() => navigate({ name: "settings" })}
+        >
+          <Settings className="size-4" />
+        </TitleBarButton>
+        <div className="mx-1.5 h-4 w-px shrink-0 bg-border" />
         <TitleBarButton
           label="Minimize"
           onClick={() => void runWindowAction((appWindow) => appWindow.minimize())}
@@ -114,11 +132,13 @@ export function AppTitleBar() {
 function TitleBarButton({
   label,
   danger,
+  active,
   onClick,
   children,
 }: {
   label: string;
   danger?: boolean;
+  active?: boolean;
   onClick: () => void;
   children: ReactNode;
 }) {
@@ -130,6 +150,7 @@ function TitleBarButton({
       className={cn(
         "grid h-10 w-11 place-items-center text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
         danger && "hover:bg-destructive hover:text-destructive-foreground",
+        active && "bg-accent/70 text-foreground",
       )}
       onClick={(event) => {
         event.stopPropagation();

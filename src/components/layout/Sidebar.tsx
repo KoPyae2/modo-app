@@ -17,7 +17,6 @@ import {
   Pencil,
   Plus,
   Search,
-  Settings,
   Trash2,
   Zap,
 } from "lucide-react";
@@ -283,7 +282,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "flex h-full shrink-0 flex-col border-r bg-card/90 backdrop-blur-xl transition-[width] duration-200 dark:bg-card/82",
+        "flex h-full shrink-0 flex-col border-r bg-card/60 backdrop-blur-xl backdrop-saturate-150 transition-[width] duration-200 dark:bg-card/55",
         collapsed ? "w-14" : "w-64",
       )}
       aria-label="Sidebar navigation"
@@ -494,23 +493,6 @@ export function Sidebar() {
           />
         ))}
       </nav>
-
-      <div className="space-y-0.5 border-t bg-card/70 px-2 py-2.5">
-        <NavItem
-          icon={<Trash2 />}
-          label="Trash"
-          collapsed={collapsed}
-          active={view.name === "trash"}
-          onClick={() => navigate({ name: "trash" })}
-        />
-        <NavItem
-          icon={<Settings />}
-          label="Settings"
-          collapsed={collapsed}
-          active={view.name === "settings"}
-          onClick={() => navigate({ name: "settings" })}
-        />
-      </div>
 
       <NameColorDialog
         open={editTarget !== null}

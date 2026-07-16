@@ -270,12 +270,12 @@ export function NotesView({ folderId = null, noteId }: NotesViewProps) {
                         : navigate({ name: "notes", folderId, noteId: note.id })
                     }
                     className={cn(
-                      "w-full rounded-xl px-3 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      "w-full rounded-xl border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                       selecting && selectedIds.has(note.id)
-                        ? "bg-primary/10 ring-1 ring-primary/30"
+                        ? "border-primary/45 bg-primary/10"
                         : selected?.id === note.id && !selecting
-                          ? "bg-accent"
-                          : "hover:bg-accent/60",
+                          ? "border-primary/45 bg-primary/10 shadow-sm"
+                          : "border-transparent hover:border-border/70 hover:bg-accent/40",
                     )}
                   >
                     <div className="flex items-center gap-1.5">

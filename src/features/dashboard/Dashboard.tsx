@@ -252,7 +252,7 @@ export function Dashboard() {
         </p>
       </header>
 
-      <div className="mb-6 flex gap-2 rounded-2xl border bg-card/75 p-2 shadow-sm">
+      <div className="cute-card mb-6 flex gap-2 rounded-2xl p-2">
         <div className="relative flex-1">
           <Sparkles className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -262,7 +262,7 @@ export function Dashboard() {
               if (e.key === "Enter") void handleQuickAdd();
             }}
             placeholder={'Quick add - try "Buy milk tomorrow !high" or "note: meeting ideas"'}
-            className="h-11 border-transparent bg-transparent pl-9 shadow-none focus-visible:bg-card"
+            className="h-11 border-transparent bg-transparent pl-9 shadow-none focus-visible:bg-card/30"
             aria-label="Quick add task or note"
           />
         </div>
